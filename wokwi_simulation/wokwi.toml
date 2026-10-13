@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = "../firmware/pot_led.hex"
+elf = "../firmware/pot_led.elf"

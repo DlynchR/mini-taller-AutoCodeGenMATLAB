@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "author": "Mini-taller AutoCodeGenMATLAB",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 40, "left": 0, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot", "top": -100, "left": 300, "attrs": { "value": "0" } },
+    { "type": "wokwi-resistor", "id": "res", "top": 40, "left": 300, "attrs": { "value": "330" } },
+    { "type": "wokwi-led", "id": "led", "top": 110, "left": 420, "attrs": { "color": "red" } }
+  ],
+  "connections": [
+    [ "uno:5V", "pot:VCC", "red", [] ],
+    [ "uno:GND.1", "pot:GND", "black", [] ],
+    [ "pot:SIG", "uno:A0", "green", [] ],
+    [ "uno:3", "res:1", "green", [] ],
+    [ "res:2", "led:A", "red", [] ],
+    [ "led:C", "uno:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}
