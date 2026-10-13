@@ -1,32 +1,45 @@
 function resultado = compilar_modelo()
+    % COMPILAR_MODELO Genera C y enlaza firmware del Uno sin cargar una placa.
+    % Devuelve las rutas HEX y ELF. Requiere el modelo guardado y cerrado.
+    % Una compilacion correcta no demuestra por si sola el funcionamiento.
+
+    % Usar rutas del repositorio, no rutas dependientes del directorio de trabajo.
     raiz = fileparts(fileparts(mfilename('fullpath')));
     modelo = 'pot_led';
     rutaModelo = fullfile(raiz, 'model', [modelo '.slx']);
     carpetaBuild = fullfile(raiz, 'build');
     carpetaFirmware = fullfile(raiz, 'firmware');
 
+    % Evitar compilar sin modelo o descartar ediciones abiertas del usuario.
     assert(isfile(rutaModelo), 'minitaller:SinModelo', ...
         'Ejecute preparar_modelo antes de compilar.');
     assert(~bdIsLoaded(modelo), 'minitaller:ModeloAbierto', ...
         'Guarde y cierre pot_led antes de compilar con este script.');
 
+    % Los temporales y el C generado quedan en build, excluido de Git.
     if ~isfolder(carpetaBuild)
         mkdir(carpetaBuild);
     end
+    % Restaurar la carpeta de trabajo y las opciones globales de generacion
+    % al salir de la funcion, incluso cuando falle el build.
     directorioOriginal = pwd;
     restaurarDirectorio = onCleanup(@() cd(directorioOriginal));
     configuracionOriginal = Simulink.fileGenControl('getConfig');
     restaurarConfiguracion = onCleanup(@() Simulink.fileGenControl( ...
         'setConfig', 'config', configuracionOriginal));
+    % Separar la cache de Simulink del modelo fuente y los binarios entregables.
     Simulink.fileGenControl('set', 'CacheFolder', ...
         fullfile(carpetaBuild, 'cache'), 'CodeGenFolder', carpetaBuild, ...
         'createDir', true);
     cd(carpetaBuild);
 
+    % Cargar la version guardada; cerrar sin guardar los ajustes de esta sesion.
     load_system(rutaModelo);
     cerrarModelo = onCleanup(@() close_system(modelo, 0));
     assert(strcmp(get_param(modelo, 'HardwareBoard'), 'Arduino Uno'), ...
         'minitaller:PlacaIncorrecta', 'El firmware debe ser para Arduino Uno.');
+    % slbuild tambien ejecuta hooks del target: StandaloneCoderTarget por si
+    % solo no impide descargar. Forzar Build en Runtime y verificarlo antes.
     configuracion = getActiveConfigSet(modelo);
     codertarget.data.setParameterValue(configuracion, ...
         'Runtime.BuildAction', 'Build');
@@ -34,11 +47,16 @@ function resultado = compilar_modelo()
     assert(strcmp(datosTarget.Runtime.BuildAction, 'Build'), ...
         'minitaller:DespliegueNoPermitido', ...
         'La accion de construccion debe ser Build, sin carga a la placa.');
+    % Solicitar codigo y ejecutable, sin abrir el reporte ni un log muy extenso.
     set_param(modelo, 'GenCodeOnly', 'off', 'LaunchReport', 'off', ...
         'RTWVerbose', 'off');
 
+    % Simulink Coder genera C; el toolchain AVR compila y enlaza el modelo,
+    % sus controladores, el scheduler y el core Arduino en un programa completo.
     slbuild(modelo, 'StandaloneCoderTarget', 'GenerateCodeOnly', false);
 
+    % Exigir artefactos unicos evita elegir silenciosamente un archivo ambiguo.
+    % HEX contiene la imagen de programa; ELF conserva secciones y simbolos.
     archivosHex = dir(fullfile(carpetaBuild, '**', [modelo '.hex']));
     archivosElf = dir(fullfile(carpetaBuild, '**', [modelo '.elf']));
     assert(numel(archivosHex) == 1 && numel(archivosElf) == 1, ...
@@ -46,6 +64,8 @@ function resultado = compilar_modelo()
         'Se esperaba un HEX y un ELF; se encontraron %d y %d en %s.', ...
         numel(archivosHex), numel(archivosElf), carpetaBuild);
 
+    % Publicar los binarios para Wokwi solo despues de un build exitoso.
+    % Una recompilacion reemplaza las copias anteriores: repetir las pruebas.
     if ~isfolder(carpetaFirmware)
         mkdir(carpetaFirmware);
     end

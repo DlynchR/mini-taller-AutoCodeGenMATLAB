@@ -292,6 +292,32 @@ Las instrucciones para repetirla y su tabla de comprobacion estan en el
 - Montar y probar la demo fisica; generar los materiales academicos con evidencia
   del trabajo en NotebookLM. No se han declarado estos entregables completos.
 
+## Guia provisional para la primera defensa
+
+Se preparo [guia-provisional.md](guia-provisional.md) para explicar el avance
+desde la preparacion de MATLAB hasta la apertura del modelo y su ejecucion
+virtual. Distingue la instalacion inicial, ya existente, de las instalaciones
+realmente ejecutadas durante la sesion. Incluye mapa de archivos, fundamento
+de los bloques, pasos reproducibles, evidencias, limitaciones y guion de defensa.
+
+Se agregaron comentarios a las tres funciones de la carpeta `scripts`, sin
+cambiar sus instrucciones ejecutables. Se comprobo esa condicion comparando
+los cambios con el indice de Git. No se regeneraron el modelo ni el firmware
+para esta mejora documental; las pruebas manuales registradas siguen referidas
+a los artefactos de la primera etapa.
+
+Se exporto una [imagen del modelo real](figuras/modelo-pot-led.png) mediante
+`print('-spot_led', '-dpng', '-r150', rutaImagen)` en una sesion MATLAB por lotes,
+tras cargar el modelo guardado. La imagen se incorporo a la guia sin guardar
+cambios en el modelo ni recompilar el firmware.
+
+Se anadio [exportar_guia.py](../scripts/exportar_guia.py), con comentarios, para
+producir el [PDF provisional](guia-provisional.pdf) desde el Markdown. Usa
+Python-Markdown 3.7 en `build/pdf-venv` y Chrome en modo headless con un perfil
+temporal. La guia documenta como repetir la exportacion. Se comprobaron enlaces
+locales, extraccion de texto del PDF y paginas representativas renderizadas.
+Esta revision documental no sustituye ni repite las pruebas del firmware.
+
 ## Referencia consultada
 
 - MathWorks, [Get MATLAB Package Manager](https://www.mathworks.com/help/install/ug/get-mpm-os-command-line.html),

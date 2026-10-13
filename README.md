@@ -8,6 +8,8 @@ La configuracion de Wokwi paso validacion estatica y el expositor confirmo las
 cinco pruebas interactivas el 12 de octubre de 2026. GitHub Actions y la
 demostracion fisica todavia no estan preparados.
 
+- [Guia provisional explicada para la primera defensa](docs/guia-provisional.md).
+- [Version PDF de la guia provisional](docs/guia-provisional.pdf).
 - [Bitacora de ejecucion y pasos reproducibles](docs/bitacora.md).
 - [Comprobacion del entorno MATLAB](scripts/verificar_entorno.m).
 
