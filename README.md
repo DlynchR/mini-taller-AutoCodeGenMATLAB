@@ -1,7 +1,6 @@
 # Mini-taller: Simulink y Arduino virtual
 
-Este mini-taller se realiza en **Linux x86-64**, también desde una terminal WSL
-para el recorrido virtual.
+El asistente y el recorrido completo estan preparados para **Linux x86-64**.
 
 Controla el brillo de un LED con un potenciometro en un Arduino Uno emulado.
 Elige tu recorrido:
@@ -10,6 +9,12 @@ Elige tu recorrido:
 - **Completo (con MATLAB):** Consulta la [guia detallada](docs/tutorial-detallado.md)
   para instalar las dependencias automaticamente, examinar el modelo, generar
   codigo, compilar el firmware y probarlo en Wokwi.
+
+**Nota para Windows:** El recorrido rapido tambien se puede hacer en Windows
+con el firmware incluido. Instala manualmente la extension Wokwi en VS Code y
+abre la carpeta `wokwi_emulation` como carpeta de trabajo. Desde alli, sigue
+los pasos de activacion y simulacion de la seccion 2; el asistente de la
+seccion 1 esta preparado para Linux.
 
 Ambos recorridos terminan con el mismo circuito virtual. No necesitas una placa fisica.
 
@@ -31,10 +36,6 @@ python3 iniciar.py
 El asistente comprueba el firmware y el circuito, instala Wokwi si falta y abre
 **otra ventana de VS Code dedicada al circuito**. No modifica el modelo, los
 binarios ni tus licencias. Conserva la ventana original para repetir el comando.
-En WSL usa el VS Code instalado en Windows: el asistente prepara la extensión WSL
-y abre el circuito como carpeta remota. La ventana nueva debe mostrar `WSL` en
-la esquina inferior izquierda y `wokwi.toml` y `diagram.json` en el explorador.
-Si Wokwi no aparece en esa ventana, revisa **Extensions** e instálalo allí.
 
 Resultado esperado: `PREPARADO`. Esto no significa que la simulacion ya este
 ejecutandose. Si aparece `NO LISTO`, sigue la indicacion y repite el comando.
@@ -75,8 +76,7 @@ Ver el brillo cambiar no mide la frecuencia PWM ni valida el circuito fisico.
 - Falta firmware: extrae el repositorio completo o usa la ruta MATLAB de la
   [guia detallada](docs/tutorial-detallado.md) para generarlo.
 - No aparecen los comandos Wokwi: guarda tu trabajo y ejecuta
-  **Developer: Reload Window** desde `F1`; en WSL comprueba también que la
-  ventana indique `WSL` y que Wokwi esté disponible en esa ventana.
+  **Developer: Reload Window** desde `F1`.
 
 Para revisar sin instalar ni abrir ventanas, agrega `--comprobar` al comando.
 Para preparar sin abrir la ventana, agrega `--sin-abrir`.
