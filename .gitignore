@@ -1,3 +1,4 @@
 /build/
 *.slxc
 *.slx.autosave
+__pycache__/
