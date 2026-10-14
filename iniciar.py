@@ -3,9 +3,11 @@
 from pathlib import Path
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
+from urllib.parse import quote
 
 if sys.version_info < (3, 11):
     raise SystemExit("Se necesita Python 3.11 o posterior. Actualiza Python y repite.")
@@ -115,9 +117,9 @@ def ejecutar_code(ejecutable, argumentos, timeout=60):
     return resultado.stdout
 
 
-def comprobar_extension(ejecutable):
+def comprobar_extension(ejecutable, extension="wokwi.wokwi-vscode"):
     extensiones = ejecutar_code(ejecutable, ["--list-extensions"])
-    return "wokwi.wokwi-vscode" in {linea.strip().lower() for linea in extensiones.splitlines()}
+    return extension in {linea.strip().lower() for linea in extensiones.splitlines()}
 
 
 def preparar_vscode(carpeta, solo_comprobar=False, sin_abrir=False):
@@ -129,6 +131,18 @@ def preparar_vscode(carpeta, solo_comprobar=False, sin_abrir=False):
             "Comprueba que el comando code este disponible en PATH."
         )
     print("[2/3] Comprobando la extension Wokwi...")
+    distribucion = os.environ.get("WSL_DISTRO_NAME")
+    if distribucion:
+        extension_wsl = "ms-vscode-remote.remote-wsl"
+        if not comprobar_extension(ejecutable, extension_wsl):
+            if solo_comprobar:
+                raise ErrorPreparacion(
+                    "Falta la extension WSL de VS Code. Ejecuta sin --comprobar para instalarla."
+                )
+            print("Instalando la extension WSL de VS Code...", flush=True)
+            ejecutar_code(ejecutable, ["--install-extension", extension_wsl], timeout=180)
+            if not comprobar_extension(ejecutable, extension_wsl):
+                raise ErrorPreparacion("No se instalo la extension WSL en VS Code. Revisa Extensions.")
     if not comprobar_extension(ejecutable):
         if solo_comprobar:
             raise ErrorPreparacion(
@@ -145,7 +159,9 @@ def preparar_vscode(carpeta, solo_comprobar=False, sin_abrir=False):
     else:
         # Wokwi encuentra su TOML en la raiz de esta ventana dedicada al circuito.
         # Los binarios siguen resolviendose con ../firmware, sin copiar archivos.
-        ejecutar_code(ejecutable, ["--new-window", "--folder-uri", carpeta.as_uri()])
+        uri = (f"vscode-remote://wsl+{quote(distribucion, safe='')}"
+               f"{quote(carpeta.as_posix(), safe='/')}") if distribucion else carpeta.as_uri()
+        ejecutar_code(ejecutable, ["--new-window", "--folder-uri", uri])
         print("[3/3] Se solicito abrir una ventana de VS Code dedicada al circuito.")
 
 

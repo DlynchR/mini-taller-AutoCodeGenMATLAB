@@ -1,6 +1,7 @@
 # Mini-taller: Simulink y Arduino virtual
 
-Este mini-taller se realiza en **Linux x86-64**.
+Este mini-taller se realiza en **Linux x86-64**, también desde una terminal WSL
+para el recorrido virtual.
 
 Controla el brillo de un LED con un potenciometro en un Arduino Uno emulado.
 Elige tu recorrido:
@@ -30,6 +31,10 @@ python3 iniciar.py
 El asistente comprueba el firmware y el circuito, instala Wokwi si falta y abre
 **otra ventana de VS Code dedicada al circuito**. No modifica el modelo, los
 binarios ni tus licencias. Conserva la ventana original para repetir el comando.
+En WSL usa el VS Code instalado en Windows: el asistente prepara la extensión WSL
+y abre el circuito como carpeta remota. La ventana nueva debe mostrar `WSL` en
+la esquina inferior izquierda y `wokwi.toml` y `diagram.json` en el explorador.
+Si Wokwi no aparece en esa ventana, revisa **Extensions** e instálalo allí.
 
 Resultado esperado: `PREPARADO`. Esto no significa que la simulacion ya este
 ejecutandose. Si aparece `NO LISTO`, sigue la indicacion y repite el comando.
@@ -70,7 +75,8 @@ Ver el brillo cambiar no mide la frecuencia PWM ni valida el circuito fisico.
 - Falta firmware: extrae el repositorio completo o usa la ruta MATLAB de la
   [guia detallada](docs/tutorial-detallado.md) para generarlo.
 - No aparecen los comandos Wokwi: guarda tu trabajo y ejecuta
-  **Developer: Reload Window** desde `F1`.
+  **Developer: Reload Window** desde `F1`; en WSL comprueba también que la
+  ventana indique `WSL` y que Wokwi esté disponible en esa ventana.
 
 Para revisar sin instalar ni abrir ventanas, agrega `--comprobar` al comando.
 Para preparar sin abrir la ventana, agrega `--sin-abrir`.

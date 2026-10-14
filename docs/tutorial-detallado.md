@@ -1,6 +1,9 @@
 # Tutorial detallado: de Simulink a Wokwi
 
-Este mini-taller está preparado para **Linux x86-64**.
+Este mini-taller está preparado para **Linux x86-64**. El circuito virtual
+también puede abrirse desde WSL en el VS Code instalado en Windows. La ruta de
+generación con MATLAB requiere MATLAB instalado en Linux; el asistente no puede
+completar una instalación de MATLAB de Windows desde WSL.
 
 En este ejercicio un potenciómetro conectado a A0 regula el brillo de un LED
 conectado a D3 mediante PWM en un Arduino Uno R3. El diagrama de Simulink se
@@ -179,6 +182,11 @@ Abre **otra ventana** de VS Code directamente en la carpeta del circuito; no
 modifica el modelo ni compila MATLAB. Espera el mensaje `PREPARADO`. Si indica
 `NO LISTO`, lee la causa y corrígela antes de seguir. Para comprobar sin
 instalar ni abrir ventanas, ejecuta el comando anterior con `--comprobar`.
+Desde WSL, el asistente comprueba la extensión WSL de VS Code y abre una carpeta
+remota en esa distribución (también si el repositorio está bajo `/mnt/c`).
+Verifica que la ventana nueva indique `WSL` y muestre `wokwi.toml` y
+`diagram.json` en el explorador. Si no aparece el comando Wokwi en esa ventana,
+instala la extensión desde **Extensions** en ella.
 
 En la **nueva ventana**, si la extensión solicita activación, usa `F1` >
 **Wokwi: Request a New License** y completa el proceso en el navegador. No

@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from urllib.parse import quote
 from unittest.mock import patch
 
 import iniciar
@@ -24,6 +25,7 @@ class PruebasAsistente(unittest.TestCase):
         self.carpeta = self.raiz / "wokwi_emulation"
         self.salida = StringIO()
         self.addCleanup(patch.stopall)
+        patch.dict("iniciar.os.environ", {"WSL_DISTRO_NAME": ""}).start()
         patch("iniciar.__file__", str(self.raiz / "iniciar.py")).start()
 
     def ejecutar(self, opciones=()):
@@ -100,6 +102,33 @@ class PruebasAsistente(unittest.TestCase):
         self.assertEqual(self.ejecutar(), 0)
         proceso.assert_called_with("code", ["--new-window", "--folder-uri", self.carpeta.as_uri()])
         self.assertEqual(proceso.call_count, 2)
+
+    def test_wsl_abre_carpeta_remota_con_espacios(self):
+        patch("iniciar.shutil.which", return_value="/mnt/c/VS Code/bin/code").start()
+        extensiones = "ms-vscode-remote.remote-wsl\nwokwi.wokwi-vscode"
+        proceso = patch("iniciar.ejecutar_code", side_effect=[extensiones, extensiones, ""]).start()
+        with patch.dict("iniciar.os.environ", {"WSL_DISTRO_NAME": "Ubuntu-24.04"}):
+            self.assertEqual(self.ejecutar(), 0)
+        uri = f"vscode-remote://wsl+Ubuntu-24.04{quote(self.carpeta.as_posix(), safe='/')}"
+        proceso.assert_called_with("/mnt/c/VS Code/bin/code", ["--new-window", "--folder-uri", uri])
+
+    def test_wsl_instala_extension_necesaria(self):
+        patch("iniciar.shutil.which", return_value="code").start()
+        proceso = patch("iniciar.ejecutar_code", side_effect=[
+            "wokwi.wokwi-vscode", "", "ms-vscode-remote.remote-wsl", "wokwi.wokwi-vscode", ""
+        ]).start()
+        with patch.dict("iniciar.os.environ", {"WSL_DISTRO_NAME": "Ubuntu"}):
+            self.assertEqual(self.ejecutar(), 0)
+        self.assertEqual(proceso.call_args_list[1].args[1],
+                         ["--install-extension", "ms-vscode-remote.remote-wsl"])
+
+    def test_wsl_comprobar_no_instala_extension(self):
+        patch("iniciar.shutil.which", return_value="code").start()
+        proceso = patch("iniciar.ejecutar_code", return_value="").start()
+        with patch.dict("iniciar.os.environ", {"WSL_DISTRO_NAME": "Ubuntu"}):
+            self.assertEqual(self.ejecutar(["--comprobar"]), 1)
+        self.assertIn("extension WSL", self.salida.getvalue())
+        proceso.assert_called_once_with("code", ["--list-extensions"])
 
     def test_vscode_ausente(self):
         patch("iniciar.shutil.which", return_value=None).start()
