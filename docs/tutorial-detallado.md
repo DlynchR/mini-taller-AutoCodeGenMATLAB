@@ -217,8 +217,8 @@ no las condiciones eléctricas de un montaje real.
 | [../scripts/preparar_modelo.m](../scripts/preparar_modelo.m) | Crea el diagrama desde cero en una copia sin modelo |
 | [../scripts/compilar_modelo.m](../scripts/compilar_modelo.m) | Genera y compila firmware sin programar una placa |
 | [../firmware/pot_led.hex](../firmware/pot_led.hex) y [../firmware/pot_led.elf](../firmware/pot_led.elf) | Firmware listo para el simulador |
-| [../wokwi_simulation/diagram.json](../wokwi_simulation/diagram.json) | Componentes y conexiones: 5V/GND del potenciómetro, A0, D3-resistencia-LED-GND |
-| [../wokwi_simulation/wokwi.toml](../wokwi_simulation/wokwi.toml) | Indica a Wokwi dónde encontrar HEX y ELF |
+| [../wokwi_emulation/diagram.json](../wokwi_emulation/diagram.json) | Componentes y conexiones: 5V/GND del potenciómetro, A0, D3-resistencia-LED-GND |
+| [../wokwi_emulation/wokwi.toml](../wokwi_emulation/wokwi.toml) | Indica a Wokwi dónde encontrar HEX y ELF |
 | [../.gitignore](../.gitignore) | Excluye los temporales de compilación y caché |
 
 En `wokwi.toml`, `../firmware/` significa subir desde la carpeta del circuito

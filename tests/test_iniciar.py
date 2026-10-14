@@ -19,9 +19,9 @@ class PruebasAsistente(unittest.TestCase):
         self.addCleanup(self.temporal.cleanup)
         self.raiz = Path(self.temporal.name) / "proyecto renombrado"
         origen = Path(iniciar.__file__).resolve().parent
-        for nombre in ("wokwi_simulation", "firmware"):
+        for nombre in ("wokwi_emulation", "firmware"):
             shutil.copytree(origen / nombre, self.raiz / nombre)
-        self.carpeta = self.raiz / "wokwi_simulation"
+        self.carpeta = self.raiz / "wokwi_emulation"
         self.salida = StringIO()
         self.addCleanup(patch.stopall)
         patch("iniciar.__file__", str(self.raiz / "iniciar.py")).start()
@@ -46,6 +46,11 @@ class PruebasAsistente(unittest.TestCase):
     def test_toml_invalido(self):
         (self.carpeta / "wokwi.toml").write_text("[wokwi", encoding="utf-8")
         with self.assertRaises(iniciar.ErrorPreparacion):
+            iniciar.validar_proyecto(self.raiz)
+
+    def test_toml_faltante_indica_carpeta_correcta(self):
+        (self.carpeta / "wokwi.toml").unlink()
+        with self.assertRaisesRegex(iniciar.ErrorPreparacion, "wokwi_emulation.*wokwi.toml"):
             iniciar.validar_proyecto(self.raiz)
 
     def test_ruta_fuera_del_proyecto(self):
@@ -115,7 +120,7 @@ class PruebasAsistente(unittest.TestCase):
     def test_cli_preserva_argumentos_sin_shell(self):
         resultado = subprocess.CompletedProcess([], 0, "", "")
         with patch("iniciar.subprocess.run", return_value=resultado) as proceso:
-            iniciar.ejecutar_code("C:/Program Files/Code/code.cmd", ["--new-window", str(self.carpeta)])
+            iniciar.ejecutar_code("/opt/VS Code/bin/code", ["--new-window", str(self.carpeta)])
             self.assertEqual(proceso.call_args.args[0][-1], str(self.carpeta))
             self.assertFalse(proceso.call_args.kwargs.get("shell", False))
 

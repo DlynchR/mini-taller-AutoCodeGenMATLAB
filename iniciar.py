@@ -20,15 +20,15 @@ class ErrorPreparacion(Exception):
 def validar_proyecto(raiz):
     """Comprueba configuracion, artefactos y cableado; no prueba la emulacion."""
     raiz = Path(raiz).resolve()
-    carpeta = raiz / "wokwi_simulation"
+    carpeta = raiz / "wokwi_emulation"
     try:
         with (carpeta / "wokwi.toml").open("rb") as archivo:
             config = tomllib.load(archivo)
         circuito = json.loads((carpeta / "diagram.json").read_text(encoding="utf-8"))
     except (OSError, ValueError) as error:
         raise ErrorPreparacion(
-            "No se pudo leer la configuracion Wokwi. Descarga y extrae el "
-            "repositorio completo, no solo iniciar.py. Detalle: " + str(error)
+            f"No se pudo leer la configuracion Wokwi en {carpeta}. Comprueba que "
+            "wokwi.toml y diagram.json esten en esa carpeta. Detalle: " + str(error)
         ) from error
 
     opciones = config.get("wokwi", {})

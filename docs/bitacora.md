@@ -243,8 +243,8 @@ de firmware que se vaya a entregar, no contra una supuesta identidad universal.
 
 ## Preparacion de Wokwi
 
-Se crearon [diagram.json](../wokwi_simulation/diagram.json) y
-[wokwi.toml](../wokwi_simulation/wokwi.toml). El circuito une 5V/GND al
+Se crearon [diagram.json](../wokwi_emulation/diagram.json) y
+[wokwi.toml](../wokwi_emulation/wokwi.toml). El circuito une 5V/GND al
 potenciometro y su salida a A0; D3 alimenta una resistencia virtual de 330 ohmios
 y el anodo del LED, con su catodo a GND. La resistencia real se verificara antes
 de la demo fisica.
@@ -294,7 +294,7 @@ Las instrucciones para repetirla y su tabla de comprobacion estan en el
 
 ## Guia provisional para la primera defensa
 
-Se preparo [guia-provisional.md](guia-provisional.md) para explicar el avance
+Se preparo `guia-provisional.md` (ya retirada) para explicar el avance
 desde la preparacion de MATLAB hasta la apertura del modelo y su ejecucion
 virtual. Distingue la instalacion inicial, ya existente, de las instalaciones
 realmente ejecutadas durante la sesion. Incluye mapa de archivos, fundamento
@@ -311,8 +311,8 @@ Se exporto una [imagen del modelo real](figuras/modelo-pot-led.png) mediante
 tras cargar el modelo guardado. La imagen se incorporo a la guia sin guardar
 cambios en el modelo ni recompilar el firmware.
 
-Se anadio [exportar_guia.py](../scripts/exportar_guia.py), con comentarios, para
-producir el [PDF provisional](guia-provisional.pdf) desde el Markdown. Usa
+Se anadio `exportar_guia.py` (ya retirado), con comentarios, para
+producir el PDF provisional (ya retirado) desde el Markdown. Usa
 Python-Markdown 3.7 en `build/pdf-venv` y Chrome en modo headless con un perfil
 temporal. La guia documenta como repetir la exportacion. Se comprobaron enlaces
 locales, extraccion de texto del PDF y paginas representativas renderizadas.

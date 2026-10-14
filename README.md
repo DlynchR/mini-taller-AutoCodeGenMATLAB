@@ -5,8 +5,8 @@ Este mini-taller se realiza en **Linux x86-64**.
 Controla el brillo de un LED con un potenciometro en un Arduino Uno emulado.
 Elige tu recorrido:
 
-- **Rapido (sin MATLAB):** utiliza el firmware incluido y sigue los pasos de abajo.
-- **Completo (con MATLAB):** consulta la [guia detallada](docs/tutorial-detallado.md)
+- **Rapido (sin MATLAB):** Utiliza el firmware incluido y sigue los pasos de abajo.
+- **Completo (con MATLAB):** Consulta la [guia detallada](docs/tutorial-detallado.md)
   para instalar las dependencias automaticamente, examinar el modelo, generar
   codigo, compilar el firmware y probarlo en Wokwi.
 
