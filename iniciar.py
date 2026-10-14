@@ -145,7 +145,7 @@ def preparar_vscode(carpeta, solo_comprobar=False, sin_abrir=False):
     else:
         # Wokwi encuentra su TOML en la raiz de esta ventana dedicada al circuito.
         # Los binarios siguen resolviendose con ../firmware, sin copiar archivos.
-        ejecutar_code(ejecutable, ["--new-window", str(carpeta)])
+        ejecutar_code(ejecutable, ["--new-window", "--folder-uri", carpeta.as_uri()])
         print("[3/3] Se solicito abrir una ventana de VS Code dedicada al circuito.")
 
 

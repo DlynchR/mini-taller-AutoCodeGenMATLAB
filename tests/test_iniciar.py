@@ -98,7 +98,7 @@ class PruebasAsistente(unittest.TestCase):
         patch("iniciar.shutil.which", return_value="code").start()
         proceso = patch("iniciar.ejecutar_code", side_effect=["wokwi.wokwi-vscode", ""]).start()
         self.assertEqual(self.ejecutar(), 0)
-        proceso.assert_called_with("code", ["--new-window", str(self.carpeta)])
+        proceso.assert_called_with("code", ["--new-window", "--folder-uri", self.carpeta.as_uri()])
         self.assertEqual(proceso.call_count, 2)
 
     def test_vscode_ausente(self):
@@ -120,8 +120,8 @@ class PruebasAsistente(unittest.TestCase):
     def test_cli_preserva_argumentos_sin_shell(self):
         resultado = subprocess.CompletedProcess([], 0, "", "")
         with patch("iniciar.subprocess.run", return_value=resultado) as proceso:
-            iniciar.ejecutar_code("/opt/VS Code/bin/code", ["--new-window", str(self.carpeta)])
-            self.assertEqual(proceso.call_args.args[0][-1], str(self.carpeta))
+            iniciar.ejecutar_code("/opt/VS Code/bin/code", ["--new-window", "--folder-uri", self.carpeta.as_uri()])
+            self.assertEqual(proceso.call_args.args[0][-1], self.carpeta.as_uri())
             self.assertFalse(proceso.call_args.kwargs.get("shell", False))
 
 
