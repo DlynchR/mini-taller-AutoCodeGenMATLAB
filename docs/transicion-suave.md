@@ -26,9 +26,7 @@ open_system(fullfile(pwd, 'model', 'pot_led_suave.slx'));
 
 El algoritmo queda asi:
 
-```text
-A0 -> single -> Escala_PWM -> Limites_PWM -> Transicion_suave -> uint8 -> PWM D3
-```
+![Diagrama de los bloques del modelo](figuras/modelo-pot-led-suave.png)
 
 El bloque nuevo es **Simulink > Discontinuities > Rate Limiter**. Se coloca
 despues de `Limites_PWM` y antes de `PWM_a_uint8`, para trabajar con el mando
