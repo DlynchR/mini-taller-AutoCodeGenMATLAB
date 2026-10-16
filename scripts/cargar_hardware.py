@@ -60,7 +60,10 @@ def validar_puerto(nombre):
 
 
 def preparar_carga(opciones):
-    firmware = Path(__file__).resolve().parent.parent / 'firmware/pot_led.hex'
+    firmware = (opciones.firmware.expanduser().resolve() if opciones.firmware else
+                Path(__file__).resolve().parent.parent / 'firmware/pot_led.hex')
+    if firmware.suffix.lower() != '.hex':
+        raise ValueError('Selecciona un archivo Intel HEX (.hex), no el ELF ni el modelo.')
     contenido = firmware.read_bytes()
     if not contenido:
         raise ValueError(f'Firmware vacio: {firmware}')
@@ -82,6 +85,8 @@ def main(argumentos=None, confirmar=input):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--listar-puertos', action='store_true', help='listar puertos sin abrirlos')
     parser.add_argument('--puerto', help='puerto del Uno elegido por el usuario; no se selecciona automaticamente')
+    parser.add_argument('--firmware', type=Path,
+                        help='HEX que se cargara; por defecto el pot_led.hex original del repositorio')
     parser.add_argument('--comprobar', action='store_true', help='comprobar archivos y permisos sin abrir el puerto')
     parser.add_argument('--avrdude', help='ruta al ejecutable; por defecto PATH o soporte Arduino de MATLAB')
     parser.add_argument('--config', help='ruta a avrdude.conf si no esta junto al cargador ni en su ruta predeterminada')

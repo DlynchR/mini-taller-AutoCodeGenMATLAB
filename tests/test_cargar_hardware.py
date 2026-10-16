@@ -59,6 +59,38 @@ class PruebasCarga(unittest.TestCase):
         self.proceso.assert_not_called()
         self.assertIn('Cancelado', self.salida.getvalue())
 
+    def test_carga_firmware_elegido_y_preserva_original(self):
+        alternativo = self.raiz / 'firmware/transicion suave.hex'
+        alternativo.write_text(':00000001FF\n')
+        original = self.firmware.read_bytes()
+        self.assertEqual(self.ejecutar(self.argumentos + ['--firmware', str(alternativo)],
+                                      respuesta='CARGAR'), 0)
+        self.assertEqual(self.proceso.call_args.args[0][-1], f'flash:w:{alternativo}:i')
+        self.assertEqual(self.firmware.read_bytes(), original)
+        self.confirmacion.assert_called_once()
+
+    def test_comprobar_firmware_elegido_no_carga(self):
+        alternativo = self.raiz / 'firmware/pot_led_suave.hex'
+        alternativo.write_text(':00000001FF\n')
+        self.assertEqual(self.ejecutar(self.argumentos + ['--firmware', str(alternativo), '--comprobar']), 0)
+        self.assertIn(str(alternativo), self.salida.getvalue())
+        self.proceso.assert_not_called()
+        self.confirmacion.assert_not_called()
+
+    def test_firmware_elegido_ausente_no_carga_original(self):
+        self.assertEqual(self.ejecutar(self.argumentos + ['--firmware', str(self.raiz / 'ausente.hex')],
+                                      respuesta='CARGAR'), 1)
+        self.proceso.assert_not_called()
+        self.confirmacion.assert_not_called()
+
+    def test_rechaza_elf_para_carga(self):
+        alternativo = self.raiz / 'firmware/pot_led_suave.elf'
+        alternativo.write_bytes(b'ELF de prueba')
+        self.assertEqual(self.ejecutar(self.argumentos + ['--firmware', str(alternativo)],
+                                      respuesta='CARGAR'), 1)
+        self.assertIn('Intel HEX', self.salida.getvalue())
+        self.proceso.assert_not_called()
+
     def test_exige_puerto_explicito(self):
         self.assertEqual(self.ejecutar([]), 1)
         self.proceso.assert_not_called()

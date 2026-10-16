@@ -439,6 +439,29 @@ La ejecucion efectiva en GitHub queda pendiente de subir los cambios. No se
 configuro ningun runner propio, no se solicitan tokens y no se carga hardware
 desde CI. Las instrucciones y los limites del workflow se describen en la guia.
 
+## 2026-10-15: variante de transicion suave
+
+Se creo `pot_led_suave.slx` a partir del original, agregando Rate Limiter antes
+de la conversion a uint8: subida 100, bajada -100 niveles PWM/s, estado inicial
+cero y muestreo heredado de 0.01 s. El recorrido completo requiere 255 pasos,
+aproximadamente 2.55 s. No se cambio el cableado ni la configuracion de la
+portadora PWM.
+
+Cinco escenarios del algoritmo pasaron en un banco Simulink sin hardware. El
+primer intento del banco fallo porque From Workspace intentaba extrapolar sin
+interpolacion; se corrigio a Holding final value y se repitio con exito.
+La compilacion genero HEX/ELF separados: 5236 bytes de programa, 303 de RAM
+estatica. El HEX suave tiene SHA-256
+`cd63b04082936724dd596c2e8c12f3b9ce4e7cc04b39b37358687151fadf12a6`.
+Los hashes del modelo y de los dos binarios originales no cambiaron.
+
+El cargador ahora acepta `--firmware`; el valor predeterminado sigue siendo el
+original. Pasaron 18 pruebas de carga simulada y la comprobacion real sin abrir
+puerto devolvio PREPARADO para el HEX suave en `/dev/ttyUSB0`. No se realizo una
+carga ni se declaro probado este firmware en hardware. El [paso a paso](transicion-suave.md)
+describe creacion, pruebas, compilacion y cambio entre ambos firmwares.
+El build de GitHub Actions permanece asociado al modelo original.
+
 ## Referencia consultada
 
 - MathWorks, [Get MATLAB Package Manager](https://www.mathworks.com/help/install/ug/get-mpm-os-command-line.html),
