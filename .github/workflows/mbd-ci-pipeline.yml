@@ -1,0 +1,74 @@
+name: Model-Based CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validar:
+    name: Pruebas y circuito
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pruebas sin hardware
+        run: python3 -m unittest discover -s tests -v
+      - name: Validar circuito y firmware incluidos
+        run: python3 -c "from iniciar import validar_proyecto; validar_proyecto('.')"
+      - name: Verificar exportacion del modelo
+        run: python3 scripts/ci_firmware.py verificar
+
+  firmware:
+    name: Compilacion AVR y analisis estatico
+    needs: validar
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar analizador
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y cppcheck
+      - name: Compilar desde fuentes
+        run: python3 scripts/ci_firmware.py compilar
+      - name: Pruebas de compilacion y fallos reales
+        env:
+          MINITALLER_TEST_AVR: '1'
+        run: python3 -m unittest discover -s tests -p test_ci_firmware.py -v
+      - name: Analizar con plataforma AVR
+        run: python3 scripts/ci_firmware.py analizar
+      - name: Informes de verificacion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informes-${{ github.sha }}
+          path: |
+            build/ci-firmware/resumen.json
+            build/ci-firmware/compile_commands.json
+            build/ci-firmware/cppcheck.xml
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Firmware y fuentes correspondientes
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-uno-${{ github.sha }}
+          path: |
+            build/ci-firmware/pot_led-ci.hex
+            build/ci-firmware/pot_led-ci.elf
+            build/ci-firmware/fuentes-reconstruccion.zip
+          if-no-files-found: error
+          retention-days: 14

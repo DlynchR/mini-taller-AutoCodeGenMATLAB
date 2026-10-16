@@ -1,4 +1,4 @@
-function resultado = compilar_modelo()
+function resultado = compilar_modelo(carpetaSalida)
     % COMPILAR_MODELO Genera C y enlaza firmware del Uno sin cargar una placa.
     % Devuelve las rutas HEX y ELF. Requiere el modelo guardado y cerrado.
     % Una compilacion correcta no demuestra por si sola el funcionamiento.
@@ -7,8 +7,11 @@ function resultado = compilar_modelo()
     raiz = fileparts(fileparts(mfilename('fullpath')));
     modelo = 'pot_led';
     rutaModelo = fullfile(raiz, 'model', [modelo '.slx']);
-    carpetaBuild = fullfile(raiz, 'build');
-    carpetaFirmware = fullfile(raiz, 'firmware');
+    if nargin == 0
+        carpetaSalida = raiz;
+    end
+    carpetaBuild = fullfile(carpetaSalida, 'build');
+    carpetaFirmware = fullfile(carpetaSalida, 'firmware');
 
     % Evitar compilar sin modelo o descartar ediciones abiertas del usuario.
     assert(isfile(rutaModelo), 'minitaller:SinModelo', ...

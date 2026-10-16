@@ -399,6 +399,46 @@ reconectar USB y repetir para comprobar arranque autonomo. Registrar resultados
 observados y el SHA-256 mostrado durante la carga. No deducir frecuencia PWM,
 linealidad luminosa ni consumo a partir de la observacion visual.
 
+## 2026-10-15: funcionamiento fisico confirmado y preparacion de CI
+
+Despues de la preparacion anterior, Linux reconocio el conversor CH340
+(`1a86:7523`) en `/dev/ttyUSB0`. La comprobacion inicial detecto falta de permisos
+en el grupo `dialout`; se indico al usuario como corregirla sin ejecutar la carga
+con privilegios. El expositor ejecuto el cargador y confirmo funcionamiento
+fisico. Posteriormente confirmo tambien la comprobacion del PWM con osciloscopio.
+Esta evidencia procede de su reporte; no se recibieron capturas ni valores
+numericos de frecuencia o ciclo util, ni resultados separados de RESET/reconexion.
+No se inventan mediciones. El estado sin placa registrado arriba es historico.
+
+Se implemento el [flujo de CI](ci.md) con pruebas Python, manifiesto de fuentes,
+compilacion AVR y analisis estatico. Las fuentes se obtienen con `packNGo` despues
+de una compilacion MATLAB nueva en una carpeta temporal. La clausula 3.2 de la
+Parte Dos del contrato de MathWorks R2026b contempla los archivos de soporte
+necesarios para la aplicacion generada; se conservaron sus avisos y no se copio
+la instalacion completa ni se aplico la licencia del repositorio a esas fuentes.
+
+Comprobaciones realizadas localmente:
+
+- Exportacion de 33 fuentes/cabeceras con hash del modelo y versiones fijadas.
+- Compilacion y enlace sin invocar MATLAB, usando GCC y el nucleo descargados de
+  Arduino y verificados con SHA-256; el nucleo tambien se compila desde fuentes.
+- Compilacion en una copia temporal con espacios, sin binarios previos ni rutas
+  de SupportPackages o de la instalacion MATLAB en los comandos de compilacion.
+- Fallos intencionales de compilacion y enlace detectados sin producir un HEX.
+- Cppcheck 2.19 sin errores bloqueantes, con tres avisos de dependencias visibles.
+- Programa: 4780 bytes; RAM estatica: 287 bytes. No se mide pila ni memoria dinamica.
+
+El HEX independiente tiene SHA-256
+`d8d286cb3030f64b51ebd72a408f09cbebc6126b2e60f47ea268aa305fd8b825`, distinto
+del HEX de MATLAB de la demo. Reordenar el enlace para acercarlo al Makefile
+original no produjo igualdad. Se conserva esta diferencia en el informe y queda
+pendiente validar funcionalmente el artefacto nuevo antes de sustituir la demo.
+El modelo y los binarios anteriormente probados no fueron reemplazados.
+
+La ejecucion efectiva en GitHub queda pendiente de subir los cambios. No se
+configuro ningun runner propio, no se solicitan tokens y no se carga hardware
+desde CI. Las instrucciones y los limites del workflow se describen en la guia.
+
 ## Referencia consultada
 
 - MathWorks, [Get MATLAB Package Manager](https://www.mathworks.com/help/install/ug/get-mpm-os-command-line.html),
