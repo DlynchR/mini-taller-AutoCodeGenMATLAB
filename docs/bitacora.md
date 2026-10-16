@@ -318,6 +318,87 @@ temporal. La guia documenta como repetir la exportacion. Se comprobaron enlaces
 locales, extraccion de texto del PDF y paginas representativas renderizadas.
 Esta revision documental no sustituye ni repite las pruebas del firmware.
 
+## 2026-10-15: preparacion de la demo fisica
+
+El expositor confirma Arduino Uno R3 / ATmega328P, potenciometro, LED,
+resistencia limitadora, protoboard y cables. Por ahora solo se comprobara
+visualmente el LED; no hay mediciones de frecuencia PWM ni de tiempos.
+
+Se agrega [cargar_hardware.py](../scripts/cargar_hardware.py), separado del
+asistente virtual. Usa el mismo [HEX](../firmware/pot_led.hex) generado por
+Simulink, sin modificar el modelo ni recompilar. La compilacion existente sigue
+sin cargar placas. La herramienta exige un puerto elegido explicitamente y
+confirmar `CARGAR` antes de sobrescribir el programa del Uno. No se proporciona
+una opcion para omitir esa confirmacion.
+
+### Montaje pendiente
+
+Armar y revisar con el USB desconectado. Para esta primera prueba, alimentar
+solo por USB; no conectar fuentes externas. Mantener GND comun y comprobar que
+no haya un cortocircuito entre 5V y GND antes de conectar.
+
+| Elemento | Conexion al Uno |
+| --- | --- |
+| Extremos del potenciometro | 5V y GND |
+| Cursor del potenciometro | A0; identificar el cursor segun el componente |
+| Salida PWM | D3 -> resistencia de 330 ohmios -> anodo del LED |
+| Catodo del LED | GND |
+| USB | Cable de datos al equipo Linux |
+
+No conectar el LED sin resistencia. Si se usa otra resistencia, comprobar su
+valor y la corriente admisible antes de energizar. Dejar D0/RX y D1/TX libres
+durante la carga. Cerrar otros programas que usen el puerto serie.
+
+### Carga pendiente
+
+Desde la raiz del repositorio, comparar los puertos antes y despues de conectar
+el Uno. La lista no identifica automaticamente el modelo de placa:
+
+```bash
+python3 scripts/cargar_hardware.py --listar-puertos
+```
+
+En los comandos siguientes, reemplazar `/dev/ttyACM0` por el puerto realmente
+identificado. Tambien se admite su enlace en `/dev/serial/by-id/`.
+
+```bash
+python3 scripts/cargar_hardware.py --puerto /dev/ttyACM0 --comprobar
+python3 scripts/cargar_hardware.py --puerto /dev/ttyACM0
+```
+
+`--comprobar` valida archivos y permisos sin abrir el puerto ni reiniciar el Uno.
+No demuestra comunicacion con el bootloader. La segunda orden muestra el
+archivo, su SHA-256, el puerto y el comando antes de solicitar `CARGAR`.
+Sobrescribe el programa previo; conservarlo antes si se necesita recuperarlo.
+`avrdude` comprueba la firma del microcontrolador y verifica la flash tras
+escribirla; el asistente no desactiva esas comprobaciones ni solicita escribir
+fusibles o EEPROM. El mensaje `CARGADO` no sustituye la prueba del circuito.
+
+Se busca `avrdude` en PATH o en el soporte Arduino instalado en
+`~/Documents/MATLAB/SupportPackages/`. Si hay varias instalaciones o estan en
+otra ubicacion, usar `--avrdude /ruta/bin/avrdude` y, si corresponde,
+`--config /ruta/etc/avrdude.conf`. No se cambian permisos ni grupos del sistema.
+
+### Verificado sin placa
+
+- Las 14 pruebas de [test_cargar_hardware.py](../tests/test_cargar_hardware.py)
+  pasan con el proceso de carga simulado: comprobacion sin escritura,
+  confirmacion, cancelacion, rutas con espacios, errores y permisos.
+- El `avrdude` del soporte Arduino se ejecuta y lee su configuracion. La consulta
+  de dispositivos reconoce ATmega328P sin abrir puertos.
+- La definicion instalada Arduino AVR 1.8.3 confirma `atmega328p`, protocolo
+  `arduino` y velocidad 115200 para Uno.
+- Al comprobar el entorno no se detecta ningun puerto USB serie. No se ha
+  cargado una placa ni se ha probado el montaje fisico.
+
+### Criterios de aceptacion pendientes
+
+Tras una carga verificada, comprobar LED apagado al minimo, brillo intermedio,
+maximo brillo y retorno a apagado. Pulsar RESET y repetir; desconectar y
+reconectar USB y repetir para comprobar arranque autonomo. Registrar resultados
+observados y el SHA-256 mostrado durante la carga. No deducir frecuencia PWM,
+linealidad luminosa ni consumo a partir de la observacion visual.
+
 ## Referencia consultada
 
 - MathWorks, [Get MATLAB Package Manager](https://www.mathworks.com/help/install/ug/get-mpm-os-command-line.html),
