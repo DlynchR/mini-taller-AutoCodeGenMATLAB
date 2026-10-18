@@ -173,14 +173,13 @@ def main(argumentos=None):
     if not opciones.comprobar:
         if opciones.sin_abrir:
             print("Repite sin --sin-abrir cuando quieras abrir el circuito.")
-        print("En la ventana del circuito:")
-        print("  1. Si se pide confianza, confia solo en un repositorio que hayas revisado.")
+        print("\nEn la ventana del circuito:")
+        print("  1. Si se pide confianza, concédelo.")
         print("  2. Si falta activacion: F1 > Wokwi: Request a New License.")
         print("     Completa el acceso en el navegador. No compartas claves ni tokens.")
-        print("     Si solicita pago, revisa las condiciones del servicio antes de continuar.")
+        print("     Debría aparecer un pop-up para volver a VS Code, sino, vuelve a Vs Code manualmente.")
         print("  3. F1 > Wokwi: Start Simulator.")
         print("  4. Prueba minimo, medio, maximo, regreso al minimo y reinicio.")
-        print("El firmware actual no envia UART; el Monitor Serie puede estar vacio.")
     return 0
 
 
