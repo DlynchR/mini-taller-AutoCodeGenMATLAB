@@ -200,8 +200,7 @@ El código, caché y reporte locales quedan en `build/` (excluida de Git).
 Después de un build correcto, el script copia `pot_led.hex` y `pot_led.elf` a
 `firmware/`. El HEX contiene la imagen para ejecutar; el ELF conserva símbolos
 útiles para analizar el programa. Un error de compilación no equivale a firmware
-nuevo: si falla, conserva el mensaje y corrígelo antes de usar Wokwi. Tras
-recompilar, **reinicia Wokwi y repite las pruebas**.
+nuevo, si falla, conserva el FW ya funcional del repositorio.
 
 Puedes inspeccionar `build/pot_led_ert_rtw/pot_led.c` si quieres ver cómo los
 bloques se convierten en lectura de A0, escalamiento, límites y salida PWM.
