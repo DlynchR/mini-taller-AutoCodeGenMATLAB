@@ -44,11 +44,13 @@ terminan con el mismo circuito virtual. **No necesitas MATLAB para la ruta A.**
 
 [3. Generar firmware (Solo Ruta B)](#3-generar-firmware-solo-ruta-b)
 
-[4. Abrir el circuito](#4-abrir-el-circuito-ambas-rutas)
+[4. Abrir el circuito (Ambas rutas)](#4-abrir-el-circuito-ambas-rutas)
 
-[5. Verificar](#5-verificar-el-comportamiento-ambas-rutas)
+[5. Verificar (Ambas rutas)](#5-verificar-el-comportamiento-ambas-rutas)
 
-[6. Problemas habituales](#problemas-habituales)
+[6. Cargar en hardware real (Opcional)](#6-carga-en-hardware-real-opcional)
+
+[7. Problemas habituales](#problemas-habituales)
 
 ## Preparar el repositorio
 
@@ -293,6 +295,81 @@ La simulación comprueba el funcionamiento del programa en el circuito virtual,
 no las condiciones eléctricas de un montaje real.
 
 [Volver a elegir ruta](#elige-tu-ruta) · [Resolver un problema](#problemas-habituales)
+
+## 6. Carga en hardware real (Opcional) 
+
+Esta sección permite probar el mismo firmware en un **Arduino Uno R3 físico**
+desde Linux. La carga reemplaza el programa que ya tenga la placa. Usa el
+firmware original `firmware/pot_led.hex`; no necesitas recompilar el modelo.
+
+### Montar el circuito
+
+Con el USB desconectado, reproduce el circuito virtual en una protoboard. Para
+esta prueba alimenta el montaje solo con el USB del Uno y comprueba que no haya
+un cortocircuito entre 5V y GND antes de conectarlo.
+
+| Elemento | Conexión al Uno |
+| --- | --- |
+| Extremos del potenciómetro | 5V y GND |
+| Cursor del potenciómetro | A0 |
+| Salida PWM | D3 -> resistencia de 330 ohmios -> ánodo del LED |
+| Cátodo del LED | GND |
+| USB | Cable de datos al equipo Linux |
+
+No conectes el LED sin resistencia. Deja libres D0/RX y D1/TX durante la carga
+y cierra cualquier monitor serie u otro programa que esté usando la placa.
+
+### Identificar el puerto
+
+Conecta el Uno mediante un cable USB de datos. Desde la raíz del repositorio,
+compara esta lista antes y después de conectarlo:
+
+```bash
+python3 scripts/cargar_hardware.py --listar-puertos
+```
+
+El resultado suele ser `/dev/ttyACM0` o `/dev/ttyUSB0`; usa el puerto que
+aparece al conectar la placa. También se puede usar el enlace estable mostrado
+en `/dev/serial/by-id/`. El script no selecciona un puerto automáticamente.
+
+Si indica falta de permisos, añade tu usuario al grupo `dialout` ejecutando el siguiente comando: 
+
+```bash
+sudo usermod -aG dialout "$USER"
+```
+
+Cierra la sesión de Linux de tu computadora y vuelve a iniciarla antes de repetir el comando para listar los puertos.
+
+### Comprobar y cargar el firmware
+
+Sustituye `/dev/ttyUSB0` por el puerto que identificaste. Primero comprueba los
+archivos y permisos sin abrir ni reiniciar la placa:
+
+```bash
+python3 scripts/cargar_hardware.py --puerto /dev/ttyUSB0 --comprobar
+```
+
+El comando debe terminar con `PREPARADO` y mostrar el archivo HEX junto con su
+SHA-256. Esta comprobación no demuestra todavía la comunicación con el Uno.
+
+Cuando estés seguro de que es la placa correcta, ejecuta la carga:
+
+```bash
+python3 scripts/cargar_hardware.py --puerto /dev/ttyUSB0
+```
+
+El asistente muestra el puerto, el firmware y el comando antes de escribir la
+flash. Escribe `CARGAR` solo para confirmar; `avrdude` programa y verifica la
+memoria. Al terminar debe indicar `CARGADO`. Gira el potenciómetro y comprueba
+LED apagado al mínimo, brillo intermedio y máximo al girarlo; pulsa RESET y
+repite la prueba. El mensaje de carga no sustituye esta verificación física.
+
+Para cargar otro firmware HEX, por ejemplo la variante de transición suave,
+indícalo explícitamente con `--firmware`:
+
+```bash
+python3 scripts/cargar_hardware.py --puerto /dev/ttyUSB0 --firmware firmware/pot_led_suave.hex
+```
 
 ## Qué hace cada archivo
 
