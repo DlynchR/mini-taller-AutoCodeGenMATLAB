@@ -1,5 +1,13 @@
 # Mini-taller: AutoCodeGenMATLAB
 
+## Parte 1: MATLAB Coder Onramp
+
+Como parte del Mini-Taller y en coordinación con el profesor, va a ser necesario completar el curso "MATLAB Coder Onramp" que ofrece la plataforma Matlab Academy. La idea es que el título de este curso sea la evidencia de haber completado el Mini-Taller, además de certificarnos en una herramienta muy útil de Matlab. Este es el enlace del curso:
+
+[MATLAB Coder Onramp](https://matlabacademy.mathworks.com/es/details/matlab-coder-onramp/ormc)
+
+## Parte 2: De Simulink a Wokwi
+
 En este ejercicio un potenciómetro conectado a A0 regula el brillo de un LED
 conectado a D3 mediante PWM en un Arduino Uno R3. 
 
@@ -323,4 +331,3 @@ Simulink representan señales del algoritmo.
 
 [Volver a elegir ruta](#elige-tu-ruta)
 
-La [licencia del repositorio](LICENSE) no sustituye los términos de MATLAB y Wokwi.
