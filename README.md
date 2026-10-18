@@ -1,4 +1,4 @@
-# Mini-taller: De Simulink a Wokwi
+# Mini-taller: AutoCodeGenMATLAB
 
 En este ejercicio un potenciómetro conectado a A0 regula el brillo de un LED
 conectado a D3 mediante PWM en un Arduino Uno R3. 
