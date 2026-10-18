@@ -41,13 +41,34 @@ def plataforma_mpm():
     raise ValueError(f"Este asistente requiere Linux x86-64; se detecto {sistema} {arquitectura}.")
 
 
+def ejecutar_mpm(comando):
+    salida = []
+    with subprocess.Popen(comando, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                          text=True, encoding="utf-8", errors="replace") as proceso:
+        assert proceso.stdout is not None
+        try:
+            for linea in proceso.stdout:
+                print(linea, end="", flush=True)
+                salida.append(linea)
+            codigo = proceso.wait()
+        except BaseException:
+            proceso.kill()
+            raise
+    ya_instalados = any(linea.strip() == "All specified products are already installed."
+                       for linea in salida)
+    if codigo == 255 and ya_instalados:
+        print("Los productos ya estan instalados; se verificara MATLAB y el soporte Arduino.")
+    elif codigo != 0:
+        raise subprocess.CalledProcessError(codigo, comando, output="".join(salida))
+
+
 def preparar(ruta, confirmar=input):
     raiz, matlab, release = instalacion(ruta)
     arquitectura, nombre_mpm = plataforma_mpm()
     print(f"MATLAB: {raiz} ({release})")
     print("Se agregaran: " + ", ".join(PRODUCTOS))
     print("Cierra MATLAB y guarda tus archivos antes de continuar.")
-    if confirmar("Escribe si para descargar mpm e instalar en esta carpeta: ").strip().lower() != "si":
+    if confirmar("Escribe \"si\" para descargar mpm e instalar en esta carpeta: ").strip().lower() != "si":
         print("Cancelado; no se descargo ni instalo nada.")
         return 0
 
@@ -59,10 +80,9 @@ def preparar(ruta, confirmar=input):
             shutil.copyfileobj(respuesta, archivo)
         mpm.chmod(mpm.stat().st_mode | 0o100)
         print("Instalando productos y soporte Arduino; esto puede tardar varios minutos.", flush=True)
-        subprocess.run(
+        ejecutar_mpm(
             [str(mpm), "install", f"--release={release}", f"--destination={raiz}",
              f"--products={PRODUCTOS[0]}", *PRODUCTOS[1:]],
-            check=True,
         )
 
     print("Comprobando MATLAB y la biblioteca Arduino...", flush=True)
