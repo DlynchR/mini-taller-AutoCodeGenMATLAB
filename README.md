@@ -29,7 +29,7 @@ extensión Wokwi, como se explica [más abajo](#ruta-windows).
 | Ruta | Qué harás | Requisitos |
 | --- | --- | --- |
 | **[A: Rápida, sin MATLAB](#ruta-rapida)** | Usar el firmware incluido, abrir Wokwi y experimentar; ir directamente a los pasos 4 y 5 | VS Code, Internet y activación Wokwi; Python 3.11+ para el asistente Linux |
-| **[B: completa, con MATLAB](#ruta-matlab)** | Preparar MATLAB, inspeccionar el modelo, generar código y compilar; después simular en Wokwi | Linux x86-64, Python 3.11+, VS Code, Internet, activación Wokwi y MATLAB con acceso a los productos necesarios |
+| **[B: Completa, con MATLAB](#ruta-matlab)** | Preparar MATLAB, inspeccionar el modelo, generar código y compilar; después simular en Wokwi | Linux x86-64, Python 3.11+, VS Code, Internet, activación Wokwi y MATLAB con acceso a los productos necesarios |
 
 Ambas rutas parten del [repositorio completo](#preparar-el-repositorio) y
 terminan con el mismo circuito virtual. **No necesitas MATLAB para la ruta A.**
@@ -180,7 +180,7 @@ vez de sobrescribirlo. Para este tutorial no hace falta reconstruirlo.
 
 ## 3. Generar firmware (solo ruta B)
 
-Guarda y cierra el modelo; el script carga la versión guardada:
+Guarda y cierra el modelo ejecutando lo siguiente (el script carga la versión guardada):
 
 ```matlab
 save_system('pot_led');
